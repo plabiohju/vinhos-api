@@ -25,16 +25,36 @@ app.get("/vinhos", async (req, res) => {
 });
 
 /* BUSCAR */
+/* BUSCA AVANÇADA */
 app.get("/vinhos/busca", async (req, res) => {
-  const { pais, uva } = req.query;
+  const {
+    nome = "",
+    pais = "",
+    uva = "",
+    tamanho = "",
+    quantidade = ""
+  } = req.query;
 
-  const result = await pool.query(
-    "SELECT * FROM vinhos WHERE pais ILIKE $1 AND uva ILIKE $2",
-    [`%${pais || ""}%`, `%${uva || ""}%`]
+  const r = await pool.query(
+    `SELECT * FROM vinhos
+     WHERE nome ILIKE $1
+       AND pais ILIKE $2
+       AND uva ILIKE $3
+       AND CAST(tamanho AS TEXT) ILIKE $4
+       AND CAST(quantidade AS TEXT) ILIKE $5
+     ORDER BY id`,
+    [
+      `%${nome}%`,
+      `%${pais}%`,
+      `%${uva}%`,
+      `%${tamanho}%`,
+      `%${quantidade}%`
+    ]
   );
 
-  res.json(result.rows);
+  res.json(r.rows);
 });
+
 
 /* ZERADOS */
 app.get("/vinhos/zerados", async (req, res) => {
@@ -67,6 +87,5 @@ app.delete("/vinhos/:id", async (req, res) => {
   await pool.query("DELETE FROM vinhos WHERE id=$1", [req.params.id]);
   res.sendStatus(200);
 });
-
 
 
