@@ -71,28 +71,20 @@ app.listen(PORT, () => {
 });
 /*editar*/
 app.put("/vinhos/:id", async (req, res) => {
-  const { id } = req.params;
   const { nome, pais, uva, tamanho, quantidade } = req.body;
 
   await pool.query(
-    `
-    UPDATE vinhos SET
-      nome = COALESCE($1, nome),
-      pais = COALESCE($2, pais),
-      uva = COALESCE($3, uva),
-      tamanho = COALESCE($4, tamanho),
-      quantidade = COALESCE($5, quantidade),
-      updated_at = CURRENT_TIMESTAMP
-    WHERE id = $6
-    `,
-    [nome, pais, uva, tamanho, quantidade, id]
+    `UPDATE vinhos 
+     SET nome=$1, pais=$2, uva=$3, tamanho=$4, quantidade=$5 
+     WHERE id=$6`,
+    [nome, pais, uva, tamanho, quantidade, req.params.id]
   );
 
   res.sendStatus(200);
 });
-
 /*excluir*/
 app.delete("/vinhos/:id", async (req, res) => {
   await pool.query("DELETE FROM vinhos WHERE id=$1", [req.params.id]);
   res.sendStatus(200);
 });
+
