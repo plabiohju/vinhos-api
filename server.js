@@ -91,10 +91,8 @@ app.put("/vinhos/:id", async (req, res) => {
   res.sendStatus(200);
 });
 
-
 /*excluir*/
 app.delete("/vinhos/:id", async (req, res) => {
   await pool.query("DELETE FROM vinhos WHERE id=$1", [req.params.id]);
   res.sendStatus(200);
 });
-
