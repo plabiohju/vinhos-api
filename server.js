@@ -11,7 +11,7 @@ app.post("/vinhos", async (req, res) => {
   const { nome, pais, uva, tamanho, quantidade,data, } = req.body;
 
   const result = await pool.query(
-    "INSERT INTO vinhos (nome, pais, uva, tamanho, quantidade, data) VALUES ($1,$2,$3,$4,$5) RETURNING *",
+    "INSERT INTO vinhos (nome, pais, uva, tamanho, quantidade, data) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *",
     [nome, pais, uva, tamanho, quantidade,data]
   );
 
@@ -43,7 +43,7 @@ app.get("/vinhos/busca", async (req, res) => {
        AND uva ILIKE $3
        AND CAST(tamanho AS TEXT) ILIKE $4
        AND CAST(quantidade AS TEXT) ILIKE $5
-       AND CAST(data AS TEXT) ILIKE $5
+       AND CAST(data AS TEXT) ILIKE $6
      ORDER BY id`,
     [
       `%${nome}%`,
@@ -85,7 +85,7 @@ app.put("/vinhos/:id", async (req, res) => {
       tamanho = COALESCE($4, tamanho),
       quantidade = COALESCE($5, quantidade)
       data = COALESCE($6, data)
-    WHERE id = $6
+    WHERE id = $7
     `,
     [nome, pais, uva, tamanho, quantidade, data, req.params.id]
   );
