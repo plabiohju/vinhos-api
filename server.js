@@ -50,7 +50,7 @@ app.get("/vinhos/busca", async (req, res) => {
       `%${pais}%`,
       `%${uva}%`,
       `%${tamanho}%`,
-      `%${quantidade}%`
+      `%${quantidade}%`,
       `%${data}%`
     ]
   );
@@ -83,7 +83,7 @@ app.put("/vinhos/:id", async (req, res) => {
       pais = COALESCE($2, pais),
       uva = COALESCE($3, uva),
       tamanho = COALESCE($4, tamanho),
-      quantidade = COALESCE($5, quantidade)
+      quantidade = COALESCE($5, quantidade),
       data = COALESCE($6, data)
     WHERE id = $7
     `,
