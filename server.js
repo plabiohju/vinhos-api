@@ -8,11 +8,11 @@ app.use(express.json());
 
 /* CADASTRAR VINHO */
 app.post("/vinhos", async (req, res) => {
-  const { nome, pais, uva, tamanho, quantidade } = req.body;
+  const { nome, pais, uva, tamanho, quantidade,data, } = req.body;
 
   const result = await pool.query(
-    "INSERT INTO vinhos (nome, pais, uva, tamanho, quantidade) VALUES ($1,$2,$3,$4,$5) RETURNING *",
-    [nome, pais, uva, tamanho, quantidade]
+    "INSERT INTO vinhos (nome, pais, uva, tamanho, quantidade, data) VALUES ($1,$2,$3,$4,$5) RETURNING *",
+    [nome, pais, uva, tamanho, quantidade,data]
   );
 
   res.json(result.rows[0]);
@@ -32,7 +32,8 @@ app.get("/vinhos/busca", async (req, res) => {
     pais = "",
     uva = "",
     tamanho = "",
-    quantidade = ""
+    quantidade = "",
+    data = ""
   } = req.query;
 
   const r = await pool.query(
@@ -42,6 +43,7 @@ app.get("/vinhos/busca", async (req, res) => {
        AND uva ILIKE $3
        AND CAST(tamanho AS TEXT) ILIKE $4
        AND CAST(quantidade AS TEXT) ILIKE $5
+       AND CAST(data AS TEXT) ILIKE $5
      ORDER BY id`,
     [
       `%${nome}%`,
@@ -49,6 +51,7 @@ app.get("/vinhos/busca", async (req, res) => {
       `%${uva}%`,
       `%${tamanho}%`,
       `%${quantidade}%`
+      `%${data}%`
     ]
   );
 
@@ -71,7 +74,7 @@ app.listen(PORT, () => {
 });
 /*editar*/
 app.put("/vinhos/:id", async (req, res) => {
-  const { nome, pais, uva, tamanho, quantidade } = req.body;
+  const { nome, pais, uva, tamanho, quantidade, data } = req.body;
 
   await pool.query(
     `
@@ -81,9 +84,10 @@ app.put("/vinhos/:id", async (req, res) => {
       uva = COALESCE($3, uva),
       tamanho = COALESCE($4, tamanho),
       quantidade = COALESCE($5, quantidade)
+      data = COALESCE($6, data)
     WHERE id = $6
     `,
-    [nome, pais, uva, tamanho, quantidade, req.params.id]
+    [nome, pais, uva, tamanho, quantidade, data, req.params.id]
   );
 
   res.sendStatus(200);
