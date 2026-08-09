@@ -8,11 +8,11 @@ app.use(express.json());
 
 /* CADASTRAR VINHO */
 app.post("/vinhos", async (req, res) => {
-  const { nome, pais, uva, tamanho, quantidade,data, } = req.body;
+  const { nome, pais, uva, tamanho, quantidade,data,observacao, } = req.body;
 
   const result = await pool.query(
-    "INSERT INTO vinhos (nome, pais, uva, tamanho, quantidade, data) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *",
-    [nome, pais, uva, tamanho, quantidade,data]
+    "INSERT INTO vinhos (nome, pais, uva, tamanho, quantidade, data,observacao) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *",
+    [nome, pais, uva, tamanho, quantidade,data,observacao]
   );
 
   res.json(result.rows[0]);
@@ -33,7 +33,8 @@ app.get("/vinhos/busca", async (req, res) => {
     uva = "",
     tamanho = "",
     quantidade = "",
-    data = ""
+    data = "",
+    observacao = ""
   } = req.query;
 
   const r = await pool.query(
@@ -44,6 +45,7 @@ app.get("/vinhos/busca", async (req, res) => {
        AND CAST(tamanho AS TEXT) ILIKE $4
        AND CAST(quantidade AS TEXT) ILIKE $5
        AND CAST(data AS TEXT) ILIKE $6
+       AND CAST(observacao AS TEXT) ILIKE $7
      ORDER BY id`,
     [
       `%${nome}%`,
@@ -51,7 +53,8 @@ app.get("/vinhos/busca", async (req, res) => {
       `%${uva}%`,
       `%${tamanho}%`,
       `%${quantidade}%`,
-      `%${data}%`
+      `%${data}%`,
+      `%${observacao}%`
     ]
   );
 
@@ -74,7 +77,7 @@ app.listen(PORT, () => {
 });
 /*editar*/
 app.put("/vinhos/:id", async (req, res) => {
-  const { nome, pais, uva, tamanho, quantidade, data } = req.body;
+  const { nome, pais, uva, tamanho, quantidade, data, observacao } = req.body;
 
   await pool.query(
     `
@@ -85,9 +88,10 @@ app.put("/vinhos/:id", async (req, res) => {
       tamanho = COALESCE($4, tamanho),
       quantidade = COALESCE($5, quantidade),
       data = COALESCE($6, data)
-    WHERE id = $7
+      observacao = COALESCE($7, observacao)
+    WHERE id = $8
     `,
-    [nome, pais, uva, tamanho, quantidade, data, req.params.id]
+    [nome, pais, uva, tamanho, quantidade, data,observacao, req.params.id]
   );
 
   res.sendStatus(200);
